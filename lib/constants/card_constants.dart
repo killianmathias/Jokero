@@ -1,1 +1,1 @@
-const IMAGE_ASSET_PREFIX = "assets/cards/";
+const IMAGE_ASSET_PREFIX = "lib/assets/cards/";
