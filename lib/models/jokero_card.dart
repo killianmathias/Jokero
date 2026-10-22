@@ -1,4 +1,4 @@
-import "package:jokero/constants/card_constants.dart";
+import "package:jokero/constants/jokero_constants.dart";
 
 enum Rank {
   ace(11, "1"),
@@ -36,6 +36,6 @@ class JokeroCard {
 
   JokeroCard(this.rank, this.suit);
 
-  String get image_asset =>
-      "$IMAGE_ASSET_PREFIX${suit.rawValue}_${rank.rawValue}.png";
+  String get imageAsset =>
+      "$cardImagePathPrefix${suit.rawValue}_${rank.rawValue}.png";
 }

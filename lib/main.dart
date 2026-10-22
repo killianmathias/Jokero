@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:jokero/models/JokeroCard.dart';
-import 'package:jokero/views/CardWidget.dart';
+import 'package:jokero/models/jokero_card.dart';
+import 'package:jokero/views/jokero_card_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,6 +37,6 @@ class MyHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: CardWidget(JokeroCard(Rank.ace, Suit.club)));
+    return Scaffold(body: JokeroCardWidget(JokeroCard(Rank.ace, Suit.club)));
   }
 }

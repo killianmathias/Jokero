@@ -1,0 +1,1 @@
+const cardImagePathPrefix = "assets/cards/";
