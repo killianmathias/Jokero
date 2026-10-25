@@ -39,4 +39,19 @@ class JokeroCard {
 
   String get imageAsset =>
       "$cardImagePathPrefix${suit.rawValue}_${rank.rawValue}.png";
+
+  @override
+  bool operator ==(Object other) {
+    return (other is JokeroCard) && rank == other.rank && suit == other.suit;
+  }
+
+  @override
+  int get hashCode => Object.hash(rank, suit);
+
+  @override
+  String toString() => '${rank.rawValue} of ${suit.rawValue}';
+
+  bool isSameRank(JokeroCard other) {
+    return rank == other.rank;
+  }
 }
