@@ -1,3 +1,5 @@
+import "package:jokero/constants/jokero_constants.dart";
+
 import "jokero_card.dart";
 
 enum JokeroPokerHand {
@@ -21,6 +23,9 @@ enum JokeroPokerHand {
 class JokeroHand {
   List<JokeroCard> hand = [];
   List<JokeroCard> selectedCards = [];
+  List<JokeroCard> alreadyPlayedCards = [];
+
+  int get numberOfCardsToDraw => numberOfCardsInHand - hand.length;
 
   void addCards(List<JokeroCard> cards) {
     for (var card in cards) {
@@ -28,29 +33,21 @@ class JokeroHand {
     }
   }
 
-  void playCards() {
+  void discardCards() {
     for (var card in selectedCards) {
       hand.remove(card);
+      alreadyPlayedCards.add(card);
     }
     selectedCards.clear();
   }
 
-  List<JokeroCard> discardCards() {
-    List<JokeroCard> discardDeck = [];
-    for (var card in selectedCards) {
-      discardDeck.add(card);
-      hand.remove(card);
-    }
-    selectedCards.clear();
-    return discardDeck;
-  }
-
-  void selectCard(int index) {
-    var cardToSelect = hand[index];
+  void selectCard(JokeroCard cardToSelect) {
+    if (!hand.contains(cardToSelect)) return;
     if (selectedCards.contains(cardToSelect)) {
       selectedCards.remove(cardToSelect);
       return;
     }
+    if (selectedCards.length >= maximumCardsToPlay) return;
     selectedCards.add(cardToSelect);
   }
 }

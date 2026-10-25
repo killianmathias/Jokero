@@ -1,6 +1,9 @@
 const cardImagePathPrefix = "assets/cards/";
 const numberOfCardsInHand = 7;
 const startingMoney = 4;
+const maximumCardsToPlay = 5;
+const initialRemainingDiscards = 3;
+const initialRemainingHands = 4;
 
 const Map<int, int> baseChips = {
   1: 300,

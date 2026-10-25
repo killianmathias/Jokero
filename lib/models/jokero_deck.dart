@@ -23,6 +23,12 @@ class JokeroDeck {
     deck.add(card);
   }
 
+  void addCards(List<JokeroCard> cards) {
+    for (var card in cards) {
+      this.addCard(card);
+    }
+  }
+
   void removeCard(JokeroCard card) {
     deck.remove(card);
   }
