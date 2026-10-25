@@ -2,8 +2,6 @@ import "jokero_card.dart";
 
 import "dart:math";
 
-const NUMBER_OF_CARDS_IN_HAND = 7;
-
 class JokeroDeck {
   List<JokeroCard> deck;
 
