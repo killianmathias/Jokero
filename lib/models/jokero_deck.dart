@@ -28,15 +28,14 @@ class JokeroDeck {
   }
 
   void shuffle() {
-    deck.shuffle(null);
+    deck.shuffle();
   }
 
-  List<JokeroCard> draw(int numberOfcardsToDraw) {
-    deck.shuffle();
+  List<JokeroCard> draw(int numberOfCardsToDraw) {
+    var numberOfCardsAbleToDraw = min(numberOfCardsToDraw, deck.length);
+    var cardsToDraw = deck.sublist(0, numberOfCardsAbleToDraw);
 
-    var cardsToDraw = deck.sublist(0, numberOfcardsToDraw);
-
-    deck.removeRange(0, numberOfcardsToDraw);
+    deck.removeRange(0, numberOfCardsAbleToDraw);
     return cardsToDraw;
   }
 }
