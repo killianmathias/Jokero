@@ -19,10 +19,8 @@ enum JokeroPokerHand {
 }
 
 class JokeroHand {
-  List<JokeroCard> hand;
-  List<JokeroCard> selectedCards;
-
-  JokeroHand(this.hand, this.selectedCards);
+  List<JokeroCard> hand = [];
+  List<JokeroCard> selectedCards = [];
 
   void addCards(List<JokeroCard> cards) {
     for (var card in cards) {
@@ -45,5 +43,14 @@ class JokeroHand {
     }
     selectedCards.clear();
     return discardDeck;
+  }
+
+  void selectCard(int index) {
+    var cardToSelect = hand[index];
+    if (selectedCards.contains(cardToSelect)) {
+      selectedCards.remove(cardToSelect);
+      return;
+    }
+    selectedCards.add(cardToSelect);
   }
 }
