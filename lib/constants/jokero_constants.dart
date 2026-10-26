@@ -1,9 +1,12 @@
+import "package:jokero/models/jokero_joker.dart";
+
 const cardImagePathPrefix = "assets/cards/";
 const numberOfCardsInHand = 7;
 const startingMoney = 4;
 const maximumCardsToPlay = 5;
 const initialRemainingDiscards = 3;
 const initialRemainingHands = 4;
+const maxJokers = 5;
 
 const Map<int, int> baseChips = {
   1: 300,
@@ -15,3 +18,11 @@ const Map<int, int> baseChips = {
   7: 35000,
   8: 50000,
 };
+
+List<JokeroJoker> allJokers = [
+  Joker(),
+  JokerAvide(),
+  JokerFurieux(),
+  JokerGlouton(),
+  JokerLubrique(),
+];

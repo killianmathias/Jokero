@@ -9,12 +9,14 @@ import "package:jokero/constants/jokero_constants.dart";
 import 'package:jokero/models/jokero_hand_evaluator.dart';
 import 'package:jokero/models/jokero_joker.dart';
 import 'package:jokero/models/jokero_score_calculator.dart';
+import 'package:jokero/models/jokero_shop.dart';
 
 class GameViewModel extends ChangeNotifier {
   JokeroDeck deck = JokeroDeck.createStartingDeck();
   JokeroHand hand = JokeroHand();
   JokeroHandEvaluator evaluator = JokeroHandEvaluator();
   JokeroScoreCalculator calculator = JokeroScoreCalculator();
+  JokeroShop shop = JokeroShop();
 
   JokeroGameState gameState = .blindSelection;
 
@@ -45,6 +47,26 @@ class GameViewModel extends ChangeNotifier {
   }
 
   JokeroBlind get currentBlind => currentAnte.blinds[currentBlindIndex];
+  bool get canPlayHand =>
+      hand.selectedCards.isNotEmpty &&
+      hand.selectedCards.length <= 5 &&
+      remainingHands > 0;
+
+  bool get canDiscard =>
+      hand.selectedCards.isNotEmpty &&
+      hand.selectedCards.length <= 5 &&
+      remainingDiscards > 0;
+
+  List<JokeroJoker> get availableJokers =>
+      allJokers.where((joker) => !jokers.contains(joker)).toList();
+
+  bool canBuyJoker(JokeroJoker joker) {
+    return money >= joker.cost && jokers.length < maxJokers;
+  }
+
+  bool canRerollShop() {
+    return money >= shop.rerollCost;
+  }
 
   void toggleCard(JokeroCard card) {
     hand.selectCard(card);
@@ -60,7 +82,11 @@ class GameViewModel extends ChangeNotifier {
 
     if (score >= currentBlind.scoreToReach) {
       money += currentBlind.reward;
-      startNextRound();
+
+      shop.restock(availableJokers);
+
+      gameState = JokeroGameState.shop;
+      notifyListeners();
       return;
     }
 
@@ -96,5 +122,55 @@ class GameViewModel extends ChangeNotifier {
     hand.hand.clear();
     hand.alreadyPlayedCards.clear();
     deck.shuffle();
+  }
+
+  void choseBlind() {
+    gameState = .round;
+  }
+
+  void buyJoker(JokeroJoker joker) {
+    if (!canBuyJoker(joker)) return;
+
+    money -= joker.cost;
+    jokers.add(joker);
+    shop.removeItem(joker);
+
+    notifyListeners();
+  }
+
+  void sellJoker(JokeroJoker joker) {
+    if (!jokers.contains(joker)) return;
+
+    money += joker.sellPrice;
+    jokers.remove(joker);
+
+    notifyListeners();
+  }
+
+  void reorderJokers(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex -= 1;
+    }
+
+    final JokeroJoker item = jokers.removeAt(oldIndex);
+    jokers.insert(newIndex, item);
+
+    notifyListeners();
+  }
+
+  void rerollShop() {
+    if (!canRerollShop()) return;
+
+    money -= shop.rerollCost;
+    shop.restock(availableJokers);
+    notifyListeners();
+  }
+
+  void leaveShop() {
+    startNextRound();
+
+    gameState = .blindSelection;
+
+    notifyListeners();
   }
 }
