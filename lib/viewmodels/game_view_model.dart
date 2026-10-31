@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:jokero/models/jokero_ante.dart';
 import 'package:jokero/models/jokero_card.dart';
@@ -60,6 +62,12 @@ class GameViewModel extends ChangeNotifier {
   List<JokeroJoker> get availableJokers =>
       allJokers.where((joker) => !jokers.contains(joker)).toList();
 
+  JokeroHandCombinaison get currentCombinaison =>
+      evaluator.evaluate(hand.selectedCards);
+
+  int get currentPreviewScore =>
+      calculator.totalScore(currentCombinaison, jokers);
+
   bool canBuyJoker(JokeroJoker joker) {
     return money >= joker.cost && jokers.length < maxJokers;
   }
@@ -92,10 +100,12 @@ class GameViewModel extends ChangeNotifier {
 
     if (remainingHands == 0) {
       gameState = .defeat;
+      notifyListeners();
       return;
     }
 
     hand.addCards(deck.draw(hand.numberOfCardsToDraw));
+    notifyListeners();
   }
 
   void discardCards() {
@@ -103,6 +113,7 @@ class GameViewModel extends ChangeNotifier {
     hand.discardCards();
     hand.addCards(deck.draw(hand.numberOfCardsToDraw));
     remainingDiscards--;
+    notifyListeners();
   }
 
   void startNextRound() {
@@ -122,10 +133,12 @@ class GameViewModel extends ChangeNotifier {
     hand.hand.clear();
     hand.alreadyPlayedCards.clear();
     deck.shuffle();
+    hand.addCards(deck.draw(numberOfCardsInHand));
   }
 
   void choseBlind() {
     gameState = .round;
+    notifyListeners();
   }
 
   void buyJoker(JokeroJoker joker) {
@@ -171,6 +184,16 @@ class GameViewModel extends ChangeNotifier {
 
     gameState = .blindSelection;
 
+    notifyListeners();
+  }
+
+  void restartGame() {
+    gameState = .blindSelection;
+    currentAnteLevel = 1;
+    currentAnte = JokeroAnte(currentAnteLevel);
+    currentBlindIndex = 0;
+    score = 0;
+    hand.addCards(deck.draw(numberOfCardsInHand));
     notifyListeners();
   }
 }
