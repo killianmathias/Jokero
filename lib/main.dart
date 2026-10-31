@@ -1,42 +1,106 @@
 import 'package:flutter/material.dart';
-import 'package:jokero/models/jokero_card.dart';
-import 'package:jokero/views/jokero_card_widget.dart';
+import 'package:jokero/models/jokero_game_state.dart';
+import 'package:jokero/viewmodels/game_view_model.dart';
+import 'package:jokero/views/blind_selection_view.dart';
+import 'package:jokero/views/defeat_view.dart';
+import 'package:jokero/views/game_information_menu_view.dart';
+import 'package:jokero/views/round_view.dart';
+import 'package:jokero/views/shop_view.dart';
+import 'package:flutter/services.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]).then((_) {
+    runApp(const JokeroGame());
+  });
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class JokeroGame extends StatefulWidget {
+  const JokeroGame({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<JokeroGame> createState() => _JokeroGameState();
+}
+
+class _JokeroGameState extends State<JokeroGame> {
+  late final GameViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = GameViewModel();
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Jokero',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      home: ListenableBuilder(
+        listenable: _viewModel,
+        builder: (context, child) {
+          return Scaffold(
+            backgroundColor: const Color(0xFF0F1B1A),
+
+            body: SafeArea(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: GameInformationMenuView(viewModel: _viewModel),
+                      ),
+                      Expanded(flex: 3, child: _buildCurrentScreen(_viewModel)),
+                      // const Expanded(flex: 2, child: Column(
+                      //   children: [
+
+                      //     const Expanded(child: )
+                      //     const Expanded(flex: 3, child: CenterPlayAreaWidget()),
+
+                      //     const Expanded(flex: 2, child: PlayerHandWidget()),
+                      //   ],
+                      // )),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            //  _buildCurrentScreen(_viewModel),
+          );
+        },
+      ),
     );
   }
-}
 
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(body: JokeroCardWidget(JokeroCard(Rank.ace, Suit.club)));
+  Widget _buildCurrentScreen(GameViewModel vm) {
+    switch (vm.gameState) {
+      case JokeroGameState.blindSelection:
+        return BlindSelectionView(viewModel: vm);
+      case JokeroGameState.round:
+        return RoundView(viewModel: vm);
+      case JokeroGameState.shop:
+        return ShopView(viewModel: vm);
+      case JokeroGameState.defeat:
+        return DefeatView(viewModel: vm);
+    }
   }
 }
