@@ -13,13 +13,13 @@ void main() {
       final kingOfHeart = JokeroCard(Rank.king, Suit.heart);
 
       // Act & Assert
-      expect(kingOfClub.imageAsset, "${cardImagePathPrefix}club_king.png");
-      expect(kingOfSpade.imageAsset, "${cardImagePathPrefix}spade_king.png");
+      expect(kingOfClub.imageAsset, "${cardImagePathPrefix}king_of_club.png");
+      expect(kingOfSpade.imageAsset, "${cardImagePathPrefix}king_of_spade.png");
       expect(
         kingOfDiamond.imageAsset,
-        "${cardImagePathPrefix}diamond_king.png",
+        "${cardImagePathPrefix}king_of_diamond.png",
       );
-      expect(kingOfHeart.imageAsset, "${cardImagePathPrefix}heart_king.png");
+      expect(kingOfHeart.imageAsset, "${cardImagePathPrefix}king_of_heart.png");
     });
   });
 }

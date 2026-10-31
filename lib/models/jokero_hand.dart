@@ -14,10 +14,10 @@ enum JokeroPokerHand {
   pair(10, 2, "Paire"),
   highCard(5, 1, "Carte Haute");
 
-  const JokeroPokerHand(this.chips, this.multi, this.rawValue);
+  const JokeroPokerHand(this.chips, this.multi, this.name);
   final int chips;
-  final int multi;
-  final String rawValue;
+  final double multi;
+  final String name;
 }
 
 class JokeroHand {
