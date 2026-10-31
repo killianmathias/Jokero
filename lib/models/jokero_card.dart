@@ -1,7 +1,7 @@
 import "package:jokero/constants/jokero_constants.dart";
 
 enum Rank {
-  ace(11, "1", 14),
+  ace(11, "ace", 14),
   two(2, "2", 2),
   three(3, "3", 3),
   four(4, "4", 4),
@@ -38,7 +38,7 @@ class JokeroCard {
   JokeroCard(this.rank, this.suit);
 
   String get imageAsset =>
-      "$cardImagePathPrefix${suit.rawValue}_${rank.rawValue}.png";
+      "$cardImagePathPrefix${rank.rawValue}_of_${suit.rawValue}.png";
 
   @override
   bool operator ==(Object other) {
