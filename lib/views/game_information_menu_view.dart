@@ -16,16 +16,38 @@ class GameInformationMenuView extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        BlindInformationView(
-          ante: viewModel.currentAnte,
-          blind: viewModel.currentBlind,
+        // Bloc 1 : Blind ou Shop (flex: 3)
+        Expanded(
+          flex: 3,
+          child: viewModel.gameState == .shop
+              ? Center(
+                  child: Image.asset(
+                    "assets/other_images/shop.gif",
+                    fit: BoxFit.contain,
+                  ),
+                )
+              : BlindInformationView(
+                  ante: viewModel.currentAnte,
+                  blind: viewModel.currentBlind,
+                ),
         ),
-        const SizedBox(height: 6),
-        RoundScoreView(score: viewModel.score),
-        const SizedBox(height: 6),
-        PokerHandView(pokerHand: viewModel.currentCombinaison.pokerHand),
-        const SizedBox(height: 6),
-        OtherGameInformationView(viewModel: viewModel),
+        const SizedBox(height: 4),
+        // Bloc 2 : Score du round (flex: 2)
+        Expanded(flex: 2, child: RoundScoreView(score: viewModel.score)),
+        const SizedBox(height: 4),
+        // Bloc 3 : Main de poker & Multiplicateur (flex: 2)
+        Expanded(
+          flex: 2,
+          child: PokerHandView(
+            pokerHand: viewModel.currentCombinaison.pokerHand,
+          ),
+        ),
+        const SizedBox(height: 4),
+        // Bloc 4 : Mains, Défausses, Argent, Mise, Round (flex: 4)
+        Expanded(
+          flex: 4,
+          child: OtherGameInformationView(viewModel: viewModel),
+        ),
       ],
     );
   }
@@ -42,63 +64,77 @@ class BlindInformationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        CustomText(text: blind.name, fontSize: 14),
-        const SizedBox(height: 2),
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-          decoration: BoxDecoration(
-            color: lightGrey,
-            borderRadius: BorderRadius.circular(12.0),
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+      decoration: BoxDecoration(
+        color: lightGrey,
+        borderRadius: BorderRadius.circular(12.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: CustomText(text: blind.name, fontSize: 13),
           ),
-          child: Row(
-            children: [
-              Image.asset(blind.imageAsset, width: 32, height: 32),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 3,
-                    horizontal: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: darkGrey,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomText(text: "Objectif", fontSize: 10),
-                      Row(
+          const SizedBox(height: 2),
+          Expanded(
+            child: Row(
+              children: [
+                Flexible(
+                  flex: 1,
+                  child: Image.asset(blind.imageAsset, fit: BoxFit.contain),
+                ),
+                const SizedBox(width: 6),
+                Expanded(
+                  flex: 2,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 2,
+                      horizontal: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: darkGrey,
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            "assets/blinds/token.png",
-                            width: 20,
-                            height: 20,
+                          CustomText(text: "Objectif", fontSize: 10),
+                          Row(
+                            children: [
+                              Image.asset(
+                                "assets/blinds/token.png",
+                                width: 16,
+                                height: 16,
+                              ),
+                              const SizedBox(width: 4),
+                              CustomText(
+                                text: blind.scoreToReach.toString(),
+                                fontSize: 18,
+                                color: scoreToReachColor,
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 4),
                           CustomText(
-                            text: blind.scoreToReach.toString(),
-                            fontSize: 20,
-                            color: scoreToReachColor,
+                            text: "Gagnez ${"\$" * blind.reward}",
+                            fontSize: 11,
+                            color: const Color.fromRGBO(248, 180, 73, 1),
                           ),
                         ],
                       ),
-                      CustomText(
-                        text: "Gagnez " + ("\$" * blind.reward),
-                        fontSize: 12,
-                        color: const Color.fromRGBO(248, 180, 73, 1),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -110,7 +146,7 @@ class RoundScoreView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: darkGrey,
         borderRadius: BorderRadius.circular(12.0),
@@ -118,13 +154,24 @@ class RoundScoreView extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          CustomText(text: "Round score", fontSize: 14),
-          Row(
-            children: [
-              Image.asset("assets/blinds/token.png", width: 20, height: 20),
-              const SizedBox(width: 6),
-              CustomText(text: score.toString(), fontSize: 20),
-            ],
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: CustomText(text: "Round score", fontSize: 13),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                children: [
+                  Image.asset("assets/blinds/token.png", width: 18, height: 18),
+                  const SizedBox(width: 4),
+                  CustomText(text: score.toString(), fontSize: 18),
+                ],
+              ),
+            ),
           ),
         ],
       ),
@@ -139,43 +186,65 @@ class PokerHandView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: darkGrey,
         borderRadius: BorderRadius.circular(12.0),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CustomText(text: pokerHand.name, fontSize: 14),
-          const SizedBox(height: 4),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: blue100,
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: CustomText(
-                  text: pokerHand.chips.toString(),
-                  fontSize: 18,
-                ),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: CustomText(text: pokerHand.name, fontSize: 13),
+            ),
+          ),
+          const SizedBox(height: 2),
+          Expanded(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: blue100,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: CustomText(
+                      text: pokerHand.chips.toString(),
+                      fontSize: 16,
+                    ),
+                  ),
+                  CustomText(
+                    text: " X ",
+                    fontSize: 16,
+                    color: scoreToReachColor,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: scoreToReachColor,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: CustomText(
+                      text: pokerHand.multi.toString(),
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
               ),
-              CustomText(text: " X ", fontSize: 18, color: scoreToReachColor),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: scoreToReachColor,
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: CustomText(
-                  text: pokerHand.multi.toString(),
-                  fontSize: 18,
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
@@ -190,68 +259,77 @@ class OtherGameInformationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: darkGrey,
         borderRadius: BorderRadius.circular(12.0),
       ),
       child: Column(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: _buildMiniStat(
-                  "Mains",
-                  viewModel.remainingHands.toString(),
-                  blue100,
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildMiniStat(
+                    "Mains",
+                    viewModel.remainingHands.toString(),
+                    blue100,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: _buildMiniStat(
-                  "Défausses",
-                  viewModel.remainingDiscards.toString(),
-                  scoreToReachColor,
+                const SizedBox(width: 4),
+                Expanded(
+                  child: _buildMiniStat(
+                    "Défausses",
+                    viewModel.remainingDiscards.toString(),
+                    scoreToReachColor,
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            decoration: BoxDecoration(
-              color: lightGrey,
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            alignment: Alignment.center,
-            child: CustomText(
-              text: "${viewModel.money}\$",
-              fontSize: 20,
-              color: moneyColor,
+              ],
             ),
           ),
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Expanded(
-                child: _buildMiniStat(
-                  "Mise",
-                  "${viewModel.currentAnteLevel.toString()}/8",
-                  white,
+          const SizedBox(height: 4),
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              decoration: BoxDecoration(
+                color: lightGrey,
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              alignment: Alignment.center,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: CustomText(
+                  text: "${viewModel.money}\$",
+                  fontSize: 18,
+                  color: moneyColor,
                 ),
               ),
-              const SizedBox(width: 6),
-              Expanded(
-                child: _buildMiniStat(
-                  "Round",
-                  (viewModel.currentAnteLevel *
-                          (viewModel.currentBlindIndex + 1))
-                      .toString(),
-                  white,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Expanded(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildMiniStat(
+                    "Mise",
+                    "${viewModel.currentAnteLevel}/8",
+                    white,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 4),
+                Expanded(
+                  child: _buildMiniStat(
+                    "Round",
+                    (viewModel.currentAnteLevel *
+                            (viewModel.currentBlindIndex + 1))
+                        .toString(),
+                    white,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -260,16 +338,20 @@ class OtherGameInformationView extends StatelessWidget {
 
   Widget _buildMiniStat(String label, String value, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
+      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 4),
       decoration: BoxDecoration(
         color: lightGrey,
         borderRadius: BorderRadius.circular(8.0),
       ),
-      child: Column(
-        children: [
-          CustomText(text: label, fontSize: 11),
-          CustomText(text: value, fontSize: 16, color: color),
-        ],
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CustomText(text: label, fontSize: 10),
+            CustomText(text: value, fontSize: 15, color: color),
+          ],
+        ),
       ),
     );
   }
