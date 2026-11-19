@@ -12,6 +12,8 @@ import 'package:jokero/models/jokero_hand_evaluator.dart';
 import 'package:jokero/models/jokero_joker.dart';
 import 'package:jokero/models/jokero_score_calculator.dart';
 import 'package:jokero/models/jokero_shop.dart';
+import 'package:jokero/models/jokero_stats_manager.dart';
+import 'package:jokero/services/sound_service.dart';
 
 class GameViewModel extends ChangeNotifier {
   JokeroDeck deck = JokeroDeck.createStartingDeck();
@@ -19,6 +21,7 @@ class GameViewModel extends ChangeNotifier {
   JokeroHandEvaluator evaluator = JokeroHandEvaluator();
   JokeroScoreCalculator calculator = JokeroScoreCalculator();
   JokeroShop shop = JokeroShop();
+  JokeroStatsManager statsManager = JokeroStatsManager();
 
   JokeroGameState gameState = .blindSelection;
 
@@ -40,7 +43,7 @@ class GameViewModel extends ChangeNotifier {
   }
 
   void _initGame() {
-    gameState = .blindSelection;
+    gameState = .menu;
     currentAnteLevel = 1;
     currentAnte = JokeroAnte(currentAnteLevel);
     currentBlindIndex = 0;
@@ -65,8 +68,12 @@ class GameViewModel extends ChangeNotifier {
   JokeroHandCombinaison get currentCombinaison =>
       evaluator.evaluate(hand.selectedCards);
 
-  int get currentPreviewScore =>
-      calculator.totalScore(currentCombinaison, jokers);
+  int get currentPreviewScore => calculator.totalScore(
+    currentCombinaison,
+    jokers,
+    remainingHands,
+    remainingDiscards,
+  );
 
   bool canBuyJoker(JokeroJoker joker) {
     return money >= joker.cost && jokers.length < maxJokers;
@@ -82,14 +89,27 @@ class GameViewModel extends ChangeNotifier {
   }
 
   void playHand() {
+    SoundService.pressButton();
     JokeroHandCombinaison combinaison = evaluator.evaluate(hand.selectedCards);
-    var handScore = calculator.totalScore(combinaison, jokers);
+    var handScore = calculator.totalScore(
+      combinaison,
+      jokers,
+      remainingHands,
+      remainingDiscards,
+    );
+    statsManager.cardsPlayed += hand.selectedCards.length;
     hand.discardCards();
     score += handScore;
     remainingHands--;
 
+    //stats
+    statsManager.setBestHand(handScore);
+    statsManager.playedHands[combinaison.pokerHand] =
+        (statsManager.playedHands[combinaison.pokerHand] ?? 0) + 1;
+
     if (score >= currentBlind.scoreToReach) {
       money += currentBlind.reward;
+      SoundService.earnMoney();
 
       shop.restock(availableJokers);
 
@@ -100,6 +120,7 @@ class GameViewModel extends ChangeNotifier {
 
     if (remainingHands == 0) {
       gameState = .defeat;
+      statsManager.saveUserData();
       notifyListeners();
       return;
     }
@@ -110,23 +131,38 @@ class GameViewModel extends ChangeNotifier {
 
   void discardCards() {
     if (remainingDiscards == 0 || hand.selectedCards.isEmpty) return;
+    SoundService.pressCancel();
+    statsManager.cardsDiscarded += hand.selectedCards.length;
     hand.discardCards();
     hand.addCards(deck.draw(hand.numberOfCardsToDraw));
     remainingDiscards--;
+
+    notifyListeners();
+  }
+
+  void winGame() {
+    SoundService.win();
+    gameState = .win;
+    statsManager.saveUserData();
     notifyListeners();
   }
 
   void startNextRound() {
     if (currentBlindIndex == 2) {
       currentAnteLevel += 1;
+      if (currentAnteLevel >= 8) {
+        winGame();
+        return;
+      }
       currentAnte = JokeroAnte(currentAnteLevel);
+      currentBlindIndex = 0;
     } else {
       currentBlindIndex += 1;
     }
 
     score = 0;
     remainingHands = initialRemainingHands;
-    remainingDiscards = initialRemainingHands;
+    remainingDiscards = initialRemainingDiscards;
 
     deck.addCards(hand.alreadyPlayedCards);
     deck.addCards(hand.hand);
@@ -137,24 +173,28 @@ class GameViewModel extends ChangeNotifier {
   }
 
   void choseBlind() {
+    SoundService.pressButton();
     gameState = .round;
     notifyListeners();
   }
 
   void buyJoker(JokeroJoker joker) {
     if (!canBuyJoker(joker)) return;
+    SoundService.pressButton();
 
     money -= joker.cost;
     jokers.add(joker);
     shop.removeItem(joker);
-
+    statsManager.jokerPurchased += 1;
     notifyListeners();
   }
 
   void sellJoker(JokeroJoker joker) {
     if (!jokers.contains(joker)) return;
+    SoundService.pressButton();
 
     money += joker.sellPrice;
+    SoundService.earnMoney();
     jokers.remove(joker);
 
     notifyListeners();
@@ -164,22 +204,23 @@ class GameViewModel extends ChangeNotifier {
     if (oldIndex < newIndex) {
       newIndex -= 1;
     }
-
     final JokeroJoker item = jokers.removeAt(oldIndex);
     jokers.insert(newIndex, item);
-
     notifyListeners();
   }
 
   void rerollShop() {
     if (!canRerollShop()) return;
+    SoundService.pressButton();
 
     money -= shop.rerollCost;
     shop.restock(availableJokers);
+    statsManager.numberOfReroll += 1;
     notifyListeners();
   }
 
   void leaveShop() {
+    SoundService.pressButton();
     startNextRound();
 
     gameState = .blindSelection;
@@ -187,13 +228,39 @@ class GameViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void restartGame() {
-    gameState = .blindSelection;
+  void resetGame() {
+    statsManager = JokeroStatsManager();
+    money = startingMoney;
+    jokers.clear();
+    hand.selectedCards.clear();
+    hand.alreadyPlayedCards.clear();
     currentAnteLevel = 1;
     currentAnte = JokeroAnte(currentAnteLevel);
     currentBlindIndex = 0;
     score = 0;
+    remainingDiscards = initialRemainingDiscards;
+    remainingHands = initialRemainingHands;
+    deck = JokeroDeck.createStartingDeck();
+    hand.hand.clear();
     hand.addCards(deck.draw(numberOfCardsInHand));
+    notifyListeners();
+  }
+
+  void goToMenu() {
+    SoundService.pressButton();
+    gameState = .menu;
+    resetGame();
+  }
+
+  void startGame() {
+    SoundService.pressButton();
+    gameState = .blindSelection;
+    resetGame();
+    notifyListeners();
+  }
+
+  void selectCard(JokeroCard card) {
+    hand.selectCard(card);
     notifyListeners();
   }
 }
