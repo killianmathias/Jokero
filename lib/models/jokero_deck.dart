@@ -4,6 +4,7 @@ import "dart:math";
 
 class JokeroDeck {
   List<JokeroCard> deck;
+  int numberOfCards = 52;
 
   JokeroDeck(this.deck);
 
@@ -15,6 +16,7 @@ class JokeroDeck {
         deck.add(JokeroCard(rank, suit));
       }
     }
+    deck.shuffle();
 
     return JokeroDeck(deck);
   }

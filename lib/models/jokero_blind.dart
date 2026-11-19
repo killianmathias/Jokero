@@ -19,7 +19,7 @@ class JokeroBlind {
 class JokeroBossBlind extends JokeroBlind {
   JokeroBossBlind(int baseScore)
     : super(
-        name: "Boss blind",
+        name: "Blinde boss",
         scoreToReach: baseScore * 2,
         reward: 5,
         imageAsset: "${blindImagePathPrefix}The_Eye.png",
@@ -29,7 +29,7 @@ class JokeroBossBlind extends JokeroBlind {
 class JokeroSmallBlind extends JokeroBlind {
   JokeroSmallBlind(int baseScore)
     : super(
-        name: "Small Blind",
+        name: "Petite Blinde",
         scoreToReach: baseScore,
         reward: 3,
         imageAsset: "${blindImagePathPrefix}Small_Blind.png",
@@ -39,7 +39,7 @@ class JokeroSmallBlind extends JokeroBlind {
 class JokeroBigBlind extends JokeroBlind {
   JokeroBigBlind(int baseScore)
     : super(
-        name: "Big Blind",
+        name: "Grosse Blinde",
         scoreToReach: (baseScore * 1.5).toInt(),
         reward: 4,
         imageAsset: "${blindImagePathPrefix}Big_Blind.png",

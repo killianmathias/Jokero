@@ -31,6 +31,11 @@ class JokeroHand {
     for (var card in cards) {
       hand.add(card);
     }
+    sort();
+  }
+
+  void sort() {
+    hand.sort((a, b) => b.rank.power.compareTo(a.rank.power));
   }
 
   void discardCards() {

@@ -82,7 +82,8 @@ class JokeroHandEvaluator {
   }
 
   bool isRoyalFlush(List<JokeroCard> sortedCards) {
-    return isStraightFlush(sortedCards) &&
+    return sortedCards.length == 5 &&
+        isStraightFlush(sortedCards) &&
         sortedCards.first.rank == Rank.ace &&
         sortedCards[1].rank == Rank.king;
   }
