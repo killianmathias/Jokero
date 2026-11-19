@@ -1,1 +1,1 @@
-enum JokeroGameState { blindSelection, round, shop, defeat }
+enum JokeroGameState { menu, blindSelection, round, shop, defeat, win }
