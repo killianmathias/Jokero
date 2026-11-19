@@ -4,6 +4,7 @@ import 'package:jokero/viewmodels/game_view_model.dart';
 import 'package:jokero/views/blind_selection_view.dart';
 import 'package:jokero/views/defeat_view.dart';
 import 'package:jokero/views/game_information_menu_view.dart';
+import 'package:jokero/views/home_view.dart';
 import 'package:jokero/views/round_view.dart';
 import 'package:jokero/views/shop_view.dart';
 import 'package:flutter/services.dart';
@@ -59,32 +60,7 @@ class _JokeroGameState extends State<JokeroGame> {
           return Scaffold(
             backgroundColor: const Color(0xFF0F1B1A),
 
-            body: SafeArea(
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: GameInformationMenuView(viewModel: _viewModel),
-                      ),
-                      Expanded(flex: 3, child: _buildCurrentScreen(_viewModel)),
-                      // const Expanded(flex: 2, child: Column(
-                      //   children: [
-
-                      //     const Expanded(child: )
-                      //     const Expanded(flex: 3, child: CenterPlayAreaWidget()),
-
-                      //     const Expanded(flex: 2, child: PlayerHandWidget()),
-                      //   ],
-                      // )),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            //  _buildCurrentScreen(_viewModel),
+            body: _buildCurrentScreen(_viewModel),
           );
         },
       ),
@@ -93,13 +69,15 @@ class _JokeroGameState extends State<JokeroGame> {
 
   Widget _buildCurrentScreen(GameViewModel vm) {
     switch (vm.gameState) {
+      case JokeroGameState.menu:
+        return HomeView(viewModel: vm);
       case JokeroGameState.blindSelection:
         return BlindSelectionView(viewModel: vm);
       case JokeroGameState.round:
         return RoundView(viewModel: vm);
       case JokeroGameState.shop:
         return ShopView(viewModel: vm);
-      case JokeroGameState.defeat:
+      case JokeroGameState.defeat || JokeroGameState.win:
         return DefeatView(viewModel: vm);
     }
   }
