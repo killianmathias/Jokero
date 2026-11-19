@@ -4,7 +4,12 @@ import 'package:jokero/models/jokero_joker.dart';
 import 'package:jokero/models/jokero_score.dart';
 
 class JokeroScoreCalculator {
-  int totalScore(JokeroHandCombinaison combinaison, List<JokeroJoker> jokers) {
+  int totalScore(
+    JokeroHandCombinaison combinaison,
+    List<JokeroJoker> jokers,
+    int remainingHands,
+    int remainingDiscards,
+  ) {
     final score = JokeroScore(
       chips: combinaison.pokerHand.chips,
       multi: combinaison.pokerHand.multi,
@@ -23,7 +28,13 @@ class JokeroScoreCalculator {
     }
 
     for (int i = 0; i < jokers.length; i++) {
-      jokers[i].onEvaluateJoker(score, jokers, i);
+      jokers[i].onEvaluateJoker(
+        score,
+        jokers,
+        i,
+        remainingHands,
+        remainingDiscards,
+      );
     }
 
     return score.totalScore;

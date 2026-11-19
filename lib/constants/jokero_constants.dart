@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 
 const cardImagePathPrefix = "assets/cards/";
 const blindImagePathPrefix = "assets/blinds/";
+const jokerImagePathPrefix = "assets/jokers/";
 const numberOfCardsInHand = 7;
 const startingMoney = 4;
 const maximumCardsToPlay = 5;
@@ -27,6 +28,55 @@ List<JokeroJoker> allJokers = [
   JokerFurieux(),
   JokerGlouton(),
   JokerLubrique(),
+  JokerAbstrait(),
+  JokerAncient(),
+  ArrowHead(),
+  JokeroBanner(),
+  Acrobat(),
+  Baron(),
+  JokerJovial(),
+  JokerDrole(),
+  JokerLoufoque(),
+  JokerCingle(),
+  JokerMaboul(),
+  JokerFute(),
+  JokerRuse(),
+  JokerAstucieux(),
+  JokerSournois(),
+  JokerHabile(),
+  LeDuo(),
+  LeTrio(),
+  LaFamille(),
+  LOrdre(),
+  LaTribu(),
+  OnyxAgate(),
+  Bloodstone(),
+  RoughGem(),
+  Fibonacci(),
+  EvenSteven(),
+  OddTodd(),
+  Scholar(),
+  ScaryFace(),
+  SmileyFace(),
+  WalkieTalkie(),
+  Triboulet(),
+  Photograph(),
+  WeeJoker(),
+  Hiker(),
+  MysticSummit(),
+  Misprint(),
+  HalfJoker(),
+  StencilJoker(),
+  Swashbuckler(),
+  CeremonialDagger(),
+  Blueprint(),
+  Brainstorm(),
+  Cavendish(),
+  GrosMichel(),
+  Blackboard(),
+  SeeingDouble(),
+  FlowerPot(),
+  CardSharp(),
 ];
 
 Color scoreToReachColor = Color.fromRGBO(254, 71, 75, 1);
@@ -43,3 +93,9 @@ Color yellow75 = Color.fromRGBO(255, 151, 0, 0.75);
 Color yellow50 = Color.fromRGBO(255, 151, 0, 0.5);
 
 Color white = Color.fromRGBO(255, 255, 255, 1);
+Color green = Color.fromRGBO(97, 187, 138, 1);
+
+const Color commonColor = Color(0xFF009DFF);
+const Color uncommonColor = Color(0xFF4BC292);
+const Color rareColor = Color(0xFFFE5F55);
+const Color legendaryColor = Color(0xFFB26CBB);
