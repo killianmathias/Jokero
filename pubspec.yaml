@@ -1,5 +1,5 @@
 name: jokero
-description: "A new Flutter project."
+description: "Just a Balatro-like in Flutter."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
@@ -31,13 +31,17 @@ dependencies:
     flutter:
         sdk: flutter
 
+    audioplayers: ^6.0.0
+
     # The following adds the Cupertino Icons font to your application.
     # Use with the CupertinoIcons class for iOS style icons.
     cupertino_icons: ^1.0.8
+    shared_preferences: ^2.5.6
 
 dev_dependencies:
     flutter_test:
         sdk: flutter
+    flutter_launcher_icons: "^0.14.4"
 
     # The "flutter_lints" package below contains a set of recommended lints to
     # encourage good coding practices. The lint set provided by the package is
@@ -58,6 +62,9 @@ flutter:
     assets:
         - assets/cards/
         - assets/blinds/
+        - assets/other_images/
+        - assets/jokers/
+        - assets/sounds/
 
     # To add assets to your application, add an assets section, like this:
     # assets:
@@ -91,3 +98,9 @@ flutter:
     #
     # For details regarding fonts from package dependencies,
     # see https://flutter.dev/to/font-from-package
+
+flutter_launcher_icons:
+    android: "launcher_icon"
+    ios: true
+    image_path: "assets/icon/app_icon.png"
+    min_sdk_android: 21 # android min sdk requirement
