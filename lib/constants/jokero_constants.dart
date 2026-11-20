@@ -1,3 +1,4 @@
+import "package:jokero/models/jokero_blind.dart";
 import "package:jokero/models/jokero_joker.dart";
 import "package:flutter/material.dart";
 
@@ -77,6 +78,10 @@ List<JokeroJoker> allJokers = [
   SeeingDouble(),
   FlowerPot(),
   CardSharp(),
+];
+
+List<JokeroBossBlindBuilder> allBossBlinds = [
+  ((baseScore) => TheHook(baseScore)),
 ];
 
 Color scoreToReachColor = Color.fromRGBO(254, 71, 75, 1);
