@@ -97,15 +97,15 @@ class GameViewModel extends ChangeNotifier {
       remainingHands,
       remainingDiscards,
     );
-    statsManager.cardsPlayed += hand.selectedCards.length;
+    statsManager.stats.cardsPlayed += hand.selectedCards.length;
     hand.discardCards();
     score += handScore;
     remainingHands--;
 
     //stats
     statsManager.setBestHand(handScore);
-    statsManager.playedHands[combinaison.pokerHand] =
-        (statsManager.playedHands[combinaison.pokerHand] ?? 0) + 1;
+    statsManager.stats.playedHands[combinaison.pokerHand] =
+        (statsManager.stats.playedHands[combinaison.pokerHand] ?? 0) + 1;
 
     if (score >= currentBlind.scoreToReach) {
       money += currentBlind.reward;
@@ -132,7 +132,7 @@ class GameViewModel extends ChangeNotifier {
   void discardCards() {
     if (remainingDiscards == 0 || hand.selectedCards.isEmpty) return;
     SoundService.pressCancel();
-    statsManager.cardsDiscarded += hand.selectedCards.length;
+    statsManager.stats.cardsDiscarded += hand.selectedCards.length;
     hand.discardCards();
     hand.addCards(deck.draw(hand.numberOfCardsToDraw));
     remainingDiscards--;
@@ -185,7 +185,7 @@ class GameViewModel extends ChangeNotifier {
     money -= joker.cost;
     jokers.add(joker);
     shop.removeItem(joker);
-    statsManager.jokerPurchased += 1;
+    statsManager.stats.jokerPurchased += 1;
     notifyListeners();
   }
 
@@ -215,7 +215,7 @@ class GameViewModel extends ChangeNotifier {
 
     money -= shop.rerollCost;
     shop.restock(availableJokers);
-    statsManager.numberOfReroll += 1;
+    statsManager.stats.numberOfReroll += 1;
     notifyListeners();
   }
 

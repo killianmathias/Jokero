@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jokero/constants/jokero_constants.dart';
-import 'package:jokero/models/jokero_stats_manager.dart';
 import 'package:jokero/viewmodels/game_view_model.dart';
 import 'package:jokero/views/custom_text.dart';
+import "package:jokero/views/stats_view.dart";
 
 class DefeatView extends StatelessWidget {
   const DefeatView({super.key, required this.viewModel});
@@ -61,7 +61,7 @@ class DefeatView extends StatelessWidget {
             ),
 
             const SizedBox(height: 12),
-            StatsView(manager: viewModel.statsManager),
+            StatsView(stats: viewModel.statsManager.stats),
             const SizedBox(height: 12),
             Row(
               mainAxisAlignment: .center,
@@ -109,153 +109,6 @@ class DefeatView extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class StatsView extends StatelessWidget {
-  const StatsView({super.key, required this.manager});
-  final JokeroStatsManager manager;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 50),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 4,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomText(text: "Meilleure main"),
-                      Row(
-                        children: [
-                          Image.asset("assets/blinds/token.png", width: 12),
-                          const SizedBox(width: 6),
-                          CustomText(text: manager.bestHand.toString()),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 4,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomText(text: "Main favorite"),
-                      Row(
-                        children: [
-                          CustomText(
-                            text: manager.getMostPlayedHand().name.toString(),
-                          ),
-                          const SizedBox(width: 4),
-                          CustomText(
-                            text:
-                                "(${manager.playedHands[manager.getMostPlayedHand()]})",
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 4,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomText(text: "Cartes jouees"),
-                      CustomText(
-                        text: manager.cardsPlayed.toString(),
-                        color: blue100,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 4,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomText(text: "Cartes defaussees"),
-                      CustomText(
-                        text: manager.cardsDiscarded.toString(),
-                        color: scoreToReachColor,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 4,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomText(text: "Jokers acquis"),
-                      CustomText(
-                        text: manager.jokerPurchased.toString(),
-                        color: moneyColor,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 4,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CustomText(text: "Nombre de relance"),
-                      CustomText(text: manager.numberOfReroll.toString()),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
       ),
     );
   }
