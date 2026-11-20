@@ -1,3 +1,10 @@
+import 'package:jokero/models/jokero_hand_evaluator.dart';
+import 'package:jokero/viewmodels/game_view_model.dart';
+import 'package:jokero/models/jokero_card.dart';
+import 'package:jokero/models/jokero_score.dart';
+
+import "dart:math";
+
 import 'jokero_ante.dart';
 
 import 'package:jokero/constants/jokero_constants.dart';
@@ -17,13 +24,32 @@ class JokeroBlind {
 }
 
 class JokeroBossBlind extends JokeroBlind {
-  JokeroBossBlind(int baseScore)
-    : super(
-        name: "Blinde boss",
-        scoreToReach: baseScore * 2,
-        reward: 5,
-        imageAsset: "${blindImagePathPrefix}The_Eye.png",
-      );
+  final String description;
+
+  JokeroBossBlind({
+    required super.name,
+    required super.scoreToReach,
+    required super.reward,
+    required super.imageAsset,
+    required this.description,
+  });
+
+  void onRoundStart(GameViewModel viewModel) {}
+
+  bool isCardDebuffed(JokeroCard card) => false;
+
+  bool canPlayHand(
+    JokeroHandCombinaison combinaison,
+    List<JokeroCard> cards,
+    GameViewModel viewModel,
+  ) => true;
+
+  void onEvaluateScore(JokeroScore score) {}
+
+  void onHandPlayed(
+    JokeroHandCombinaison combinaison,
+    GameViewModel viewModel,
+  ) {}
 }
 
 class JokeroSmallBlind extends JokeroBlind {
@@ -45,3 +71,5 @@ class JokeroBigBlind extends JokeroBlind {
         imageAsset: "${blindImagePathPrefix}Big_Blind.png",
       );
 }
+
+typedef JokeroBossBlindBuilder = JokeroBossBlind Function(int baseScore);

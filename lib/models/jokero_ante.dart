@@ -11,7 +11,12 @@ class JokeroAnte {
     blinds = [
       JokeroSmallBlind(baseScore),
       JokeroBigBlind(baseScore),
-      JokeroBossBlind(baseScore),
+      getRandomBossBlind(baseScore),
     ];
+  }
+
+  JokeroBossBlind getRandomBossBlind(int baseScore) {
+    final randomBuilder = (List.of(allBossBlinds)..shuffle()).first;
+    return randomBuilder(baseScore);
   }
 }

@@ -52,10 +52,21 @@ class GameViewModel extends ChangeNotifier {
   }
 
   JokeroBlind get currentBlind => currentAnte.blinds[currentBlindIndex];
-  bool get canPlayHand =>
-      hand.selectedCards.isNotEmpty &&
-      hand.selectedCards.length <= 5 &&
-      remainingHands > 0;
+  bool get canPlayHand {
+    if (hand.selectedCards.isEmpty ||
+        hand.selectedCards.length > 5 ||
+        remainingHands <= 0) {
+      return false;
+    }
+    if (currentBlind is JokeroBossBlind) {
+      return (currentBlind as JokeroBossBlind).canPlayHand(
+        currentCombinaison,
+        hand.selectedCards,
+        this,
+      );
+    }
+    return true;
+  }
 
   bool get canDiscard =>
       hand.selectedCards.isNotEmpty &&
@@ -73,6 +84,7 @@ class GameViewModel extends ChangeNotifier {
     jokers,
     remainingHands,
     remainingDiscards,
+    currentBlind,
   );
 
   bool canBuyJoker(JokeroJoker joker) {
@@ -91,11 +103,15 @@ class GameViewModel extends ChangeNotifier {
   void playHand() {
     SoundService.pressButton();
     JokeroHandCombinaison combinaison = evaluator.evaluate(hand.selectedCards);
+    if (currentBlind is JokeroBossBlind) {
+      (currentBlind as JokeroBossBlind).onHandPlayed(combinaison, this);
+    }
     var handScore = calculator.totalScore(
       combinaison,
       jokers,
       remainingHands,
       remainingDiscards,
+      currentBlind,
     );
     statsManager.stats.cardsPlayed += hand.selectedCards.length;
     hand.discardCards();
@@ -148,6 +164,9 @@ class GameViewModel extends ChangeNotifier {
   }
 
   void startNextRound() {
+    for (var joker in jokers) {
+      joker.onRoundEnd(this);
+    }
     if (currentBlindIndex == 2) {
       currentAnteLevel += 1;
       if (currentAnteLevel >= 8) {
@@ -174,6 +193,9 @@ class GameViewModel extends ChangeNotifier {
 
   void choseBlind() {
     SoundService.pressButton();
+    if (currentBlind is JokeroBossBlind) {
+      (currentBlind as JokeroBossBlind).onRoundStart(this);
+    }
     gameState = .round;
     notifyListeners();
   }
