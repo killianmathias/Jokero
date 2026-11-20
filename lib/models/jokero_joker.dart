@@ -1131,6 +1131,10 @@ class Cavendish extends JokeroJoker {
     int remainingDiscards,
   ) {
     score.multi *= 3;
+    int randomInt = Random().nextInt(1000);
+    if (randomInt == 0) {
+      allJokers.removeAt(index);
+    }
   }
 }
 
