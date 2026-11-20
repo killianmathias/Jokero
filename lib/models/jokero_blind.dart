@@ -5,8 +5,6 @@ import 'package:jokero/models/jokero_score.dart';
 
 import "dart:math";
 
-import 'jokero_ante.dart';
-
 import 'package:jokero/constants/jokero_constants.dart';
 
 class JokeroBlind {
@@ -73,3 +71,26 @@ class JokeroBigBlind extends JokeroBlind {
 }
 
 typedef JokeroBossBlindBuilder = JokeroBossBlind Function(int baseScore);
+
+class TheHook extends JokeroBossBlind {
+  TheHook(int baseScore)
+    : super(
+        name: "L'Hameçon",
+        description: "Défausse 2 cartes aléatoires par main jouée.",
+        scoreToReach: baseScore * 2,
+        reward: 5,
+        imageAsset: "${blindImagePathPrefix}boss/the_hook.png",
+      );
+
+  @override
+  void onHandPlayed(
+    JokeroHandCombinaison combinaison,
+    GameViewModel viewModel,
+  ) {
+    for (var i = 0; i < 2; i++) {
+      int handSize = viewModel.hand.hand.length;
+      int random = Random().nextInt(handSize);
+      viewModel.hand.hand.removeAt(random);
+    }
+  }
+}
