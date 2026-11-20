@@ -1317,3 +1317,36 @@ class CardSharp extends JokeroJoker {
     playedThisRound.clear();
   }
 }
+
+class Monkey extends JokeroJoker {
+  double multi = 1.0;
+
+  Monkey()
+    : super(
+        id: 'monkey',
+        name: 'Le Singe',
+        description: "",
+        rarity: .legendary,
+        cost: 1,
+      );
+
+  @override
+  String get description =>
+      "Augmente de 0.1 le multi à chaque blinde vaincue. Actuellement ${multi.toStringAsFixed(1)}";
+
+  @override
+  void onRoundEnd(GameViewModel viewModel) {
+    multi += 0.1;
+  }
+
+  @override
+  void onEvaluateJoker(
+    JokeroScore score,
+    List<JokeroJoker> allJokers,
+    int index,
+    int remainingHands,
+    int remainingDiscards,
+  ) {
+    score.multi *= multi;
+  }
+}

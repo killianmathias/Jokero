@@ -78,6 +78,7 @@ List<JokeroJoker> allJokers = [
   SeeingDouble(),
   FlowerPot(),
   CardSharp(),
+  Monkey(),
 ];
 
 List<JokeroBossBlindBuilder> allBossBlinds = [
