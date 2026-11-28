@@ -1,10 +1,12 @@
 import "package:jokero/models/jokero_blind.dart";
 import "package:jokero/models/jokero_joker.dart";
 import "package:flutter/material.dart";
+import "package:jokero/models/jokero_planet.dart";
 
 const cardImagePathPrefix = "assets/cards/";
 const blindImagePathPrefix = "assets/blinds/";
 const jokerImagePathPrefix = "assets/jokers/";
+const planetImagePathPrefix = "assets/planets/";
 const initialNumberOfCardsInHand = 7;
 var numberOfCardsInHand = initialNumberOfCardsInHand;
 const startingMoney = 4;
@@ -94,6 +96,19 @@ List<JokeroBossBlindBuilder> allBossBlinds = [
   ((baseScore) => TheSnake(baseScore)),
   ((baseScore) => TheNeedle(baseScore)),
   ((baseScore) => TheTooth(baseScore)),
+];
+
+List<JokeroPlanet> allPlanets = [
+  JokeroPlanet("mercure", "Mercure", .pair, 15, 1),
+  JokeroPlanet("venus", "Vénus", .threeOfAKind, 20, 2),
+  JokeroPlanet("terre", "Terre", .fullHouse, 25, 2),
+  JokeroPlanet("mars", "Mars", .fourOfAKind, 30, 3),
+  JokeroPlanet("jupiter", "Jupiter", .flush, 15, 2),
+  JokeroPlanet("saturne", "Saturne", .straight, 25, 2),
+  JokeroPlanet("uranus", "Uranus", .twoPair, 20, 1),
+  JokeroPlanet("neptune", "Neptune", .straightFlush, 40, 3),
+  JokeroPlanet("pluton", "Pluton", .highCard, 10, 1),
+  JokeroPlanet("sun", "The Sun", .royalFlush, 50, 4),
 ];
 
 Color scoreToReachColor = Color.fromRGBO(254, 71, 75, 1);

@@ -66,6 +66,7 @@ flutter:
         - assets/jokers/
         - assets/sounds/
         - assets/blinds/boss/
+        - assets/planets/
 
     # To add assets to your application, add an assets section, like this:
     # assets:
