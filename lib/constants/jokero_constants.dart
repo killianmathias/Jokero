@@ -79,6 +79,21 @@ List<JokeroJoker> allJokers = [
 
 List<JokeroBossBlindBuilder> allBossBlinds = [
   ((baseScore) => TheHook(baseScore)),
+  (((baseScore) => TheOx(baseScore))),
+  (((baseScore) => TheWall(baseScore))),
+  ((baseScore) => TheClub(baseScore)),
+  ((baseScore) => TheGoad(baseScore)),
+  ((baseScore) => TheWindow(baseScore)),
+  ((baseScore) => ThePlant(baseScore)),
+  ((baseScore) => TheHead(baseScore)),
+  ((baseScore) => ThePsychic(baseScore)),
+  ((baseScore) => TheWater(baseScore)),
+  (((baseScore) => TheManacle(baseScore))),
+  ((baseScore) => TheEye(baseScore)),
+  ((baseScore) => TheMouth(baseScore)),
+  ((baseScore) => TheSnake(baseScore)),
+  ((baseScore) => TheNeedle(baseScore)),
+  ((baseScore) => TheTooth(baseScore)),
 ];
 
 Color scoreToReachColor = Color.fromRGBO(254, 71, 75, 1);
