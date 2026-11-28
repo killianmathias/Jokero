@@ -39,6 +39,15 @@ class GameInformationMenuView extends StatelessWidget {
           flex: 2,
           child: PokerHandView(
             pokerHand: viewModel.currentCombinaison.pokerHand,
+            level: viewModel.getHandLevel(
+              viewModel.currentCombinaison.pokerHand,
+            ),
+            chips: viewModel.getHandChips(
+              viewModel.currentCombinaison.pokerHand,
+            ),
+            multi: viewModel.getHandMulti(
+              viewModel.currentCombinaison.pokerHand,
+            ),
           ),
         ),
         const SizedBox(height: 4),
@@ -204,8 +213,17 @@ class RoundScoreView extends StatelessWidget {
 }
 
 class PokerHandView extends StatelessWidget {
-  const PokerHandView({super.key, required this.pokerHand});
+  const PokerHandView({
+    super.key,
+    required this.pokerHand,
+    required this.level,
+    required this.chips,
+    required this.multi,
+  });
   final JokeroPokerHand pokerHand;
+  final int level;
+  final int chips;
+  final double multi;
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +241,17 @@ class PokerHandView extends StatelessWidget {
             child: FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
-              child: CustomText(text: pokerHand.name, fontSize: 13),
+              child: Row(
+                children: [
+                  CustomText(text: pokerHand.name, fontSize: 13),
+                  const SizedBox(width: 6),
+                  CustomText(
+                    text: "Niv.$level",
+                    fontSize: 11,
+                    color: blue100,
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 2),
@@ -243,7 +271,7 @@ class PokerHandView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: CustomText(
-                      text: pokerHand.chips.toString(),
+                      text: chips.toString(),
                       fontSize: 16,
                     ),
                   ),
@@ -262,7 +290,7 @@ class PokerHandView extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: CustomText(
-                      text: pokerHand.multi.toString(),
+                      text: multi.toString(),
                       fontSize: 16,
                     ),
                   ),

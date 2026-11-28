@@ -8,6 +8,7 @@ import "package:jokero/models/jokero_blind.dart";
 import "package:jokero/constants/jokero_constants.dart";
 import 'package:jokero/models/jokero_hand_evaluator.dart';
 import 'package:jokero/models/jokero_joker.dart';
+import 'package:jokero/models/jokero_planet.dart';
 import 'package:jokero/models/jokero_score_calculator.dart';
 import 'package:jokero/models/jokero_shop.dart';
 import 'package:jokero/models/jokero_stats_manager.dart';
@@ -33,6 +34,10 @@ class GameViewModel extends ChangeNotifier {
 
   int remainingHands = initialRemainingHands;
   int remainingDiscards = initialRemainingDiscards;
+
+  Map<JokeroPokerHand, int> pokerHandLevels = {
+    for (final hand in JokeroPokerHand.values) hand: 1,
+  };
 
   late JokeroAnte currentAnte;
 
@@ -77,16 +82,46 @@ class GameViewModel extends ChangeNotifier {
   JokeroHandCombinaison get currentCombinaison =>
       evaluator.evaluate(hand.selectedCards);
 
-  int get currentPreviewScore => calculator.totalScore(
-    currentCombinaison,
-    jokers,
-    remainingHands,
-    remainingDiscards,
-    currentBlind,
-  );
+  int getHandLevel(JokeroPokerHand hand) => pokerHandLevels[hand] ?? 1;
+
+  JokeroPlanet? _planetForHand(JokeroPokerHand hand) {
+    for (final planet in allPlanets) {
+      if (planet.pokerHand == hand) return planet;
+    }
+    return null;
+  }
+
+  int getHandChips(JokeroPokerHand hand) {
+    final level = getHandLevel(hand);
+    final bonus = _planetForHand(hand)?.chipsToAdd ?? 0;
+    return hand.chips + (level - 1) * bonus;
+  }
+
+  double getHandMulti(JokeroPokerHand hand) {
+    final level = getHandLevel(hand);
+    final bonus = _planetForHand(hand)?.multiToAdd ?? 0;
+    return hand.multi + (level - 1) * bonus;
+  }
+
+  int get currentPreviewScore {
+    final combinaison = currentCombinaison;
+    return calculator.totalScore(
+      combinaison,
+      jokers,
+      remainingHands,
+      remainingDiscards,
+      currentBlind,
+      baseChips: getHandChips(combinaison.pokerHand),
+      baseMulti: getHandMulti(combinaison.pokerHand),
+    );
+  }
 
   bool canBuyJoker(JokeroJoker joker) {
     return money >= joker.cost && jokers.length < maxJokers;
+  }
+
+  bool canBuyPlanet(JokeroPlanet planet) {
+    return money >= planet.cost;
   }
 
   bool canRerollShop() {
@@ -110,6 +145,8 @@ class GameViewModel extends ChangeNotifier {
       remainingHands,
       remainingDiscards,
       currentBlind,
+      baseChips: getHandChips(combinaison.pokerHand),
+      baseMulti: getHandMulti(combinaison.pokerHand),
     );
     statsManager.stats.cardsPlayed += hand.selectedCards.length;
     hand.discardCards();
@@ -211,6 +248,16 @@ class GameViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void buyPlanet(JokeroPlanet planet) {
+    if (!canBuyPlanet(planet)) return;
+    SoundService.pressButton();
+
+    money -= planet.cost;
+    pokerHandLevels[planet.pokerHand] = getHandLevel(planet.pokerHand) + 1;
+    shop.removePlanet(planet);
+    notifyListeners();
+  }
+
   void sellJoker(JokeroJoker joker) {
     if (!jokers.contains(joker)) return;
     SoundService.pressButton();
@@ -267,6 +314,7 @@ class GameViewModel extends ChangeNotifier {
     deck = JokeroDeck.createStartingDeck();
     hand.hand.clear();
     hand.addCards(deck.draw(numberOfCardsInHand));
+    pokerHandLevels = {for (final hand in JokeroPokerHand.values) hand: 1};
     notifyListeners();
   }
 

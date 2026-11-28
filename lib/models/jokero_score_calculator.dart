@@ -9,11 +9,13 @@ class JokeroScoreCalculator {
     List<JokeroJoker> jokers,
     int remainingHands,
     int remainingDiscards,
-    JokeroBlind currentBlind,
-  ) {
+    JokeroBlind currentBlind, {
+    int? baseChips,
+    double? baseMulti,
+  }) {
     final score = JokeroScore(
-      chips: combinaison.pokerHand.chips,
-      multi: combinaison.pokerHand.multi,
+      chips: baseChips ?? combinaison.pokerHand.chips,
+      multi: baseMulti ?? combinaison.pokerHand.multi,
     );
 
     for (var joker in jokers) {

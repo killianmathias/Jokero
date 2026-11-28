@@ -1,9 +1,12 @@
 import "dart:math";
 
+import "package:jokero/constants/jokero_constants.dart";
 import "jokero_joker.dart";
+import "jokero_planet.dart";
 
 class JokeroShop {
   List<JokeroJoker> itemsInStore = [];
+  List<JokeroPlanet> planetsInStore = [];
 
   int rerollCost = 5;
 
@@ -16,8 +19,13 @@ class JokeroShop {
     };
   }
 
-  void restock(List<JokeroJoker> allAvailableJokers, {int count = 3}) {
+  void restock(
+    List<JokeroJoker> allAvailableJokers, {
+    int count = 3,
+    int planetCount = 3,
+  }) {
     itemsInStore.clear();
+    planetsInStore.clear();
     final random = Random();
     final pool = List<JokeroJoker>.from(allAvailableJokers);
 
@@ -34,9 +42,16 @@ class JokeroShop {
         }
       }
     }
+
+    final planetPool = List<JokeroPlanet>.from(allPlanets)..shuffle(random);
+    planetsInStore.addAll(planetPool.take(planetCount));
   }
 
   void removeItem(JokeroJoker joker) {
     itemsInStore.remove(joker);
+  }
+
+  void removePlanet(JokeroPlanet planet) {
+    planetsInStore.remove(planet);
   }
 }

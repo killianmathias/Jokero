@@ -19,4 +19,7 @@ class JokeroPlanet {
   });
 
   String get imageAsset => "$planetImagePathPrefix$id.png";
+
+  String get description =>
+      "Améliore ${pokerHand.name} : +$chipsToAdd Jetons et +$multiToAdd Multi.";
 }

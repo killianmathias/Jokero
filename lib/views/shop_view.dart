@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jokero/constants/jokero_constants.dart';
 import 'package:jokero/models/jokero_joker.dart';
+import 'package:jokero/models/jokero_planet.dart';
 import 'package:jokero/viewmodels/game_view_model.dart';
 import 'package:jokero/views/custom_text.dart';
 import 'package:jokero/views/game_information_menu_view.dart';
@@ -49,10 +50,18 @@ class ShopJokerList extends StatefulWidget {
 
 class ShopJokerListState extends State<ShopJokerList> {
   String? selectedJokerId;
+  String? selectedPlanetId;
+  bool showPlanets = false;
 
   void toggleSelection(String jokerId) {
     setState(() {
       selectedJokerId = (selectedJokerId == jokerId) ? null : jokerId;
+    });
+  }
+
+  void togglePlanetSelection(String planetId) {
+    setState(() {
+      selectedPlanetId = (selectedPlanetId == planetId) ? null : planetId;
     });
   }
 
@@ -86,6 +95,180 @@ class ShopJokerListState extends State<ShopJokerList> {
           ),
         ],
       ),
+    );
+  }
+
+  void showPlanetDescription(BuildContext context, JokeroPlanet planet) {
+    final currentLevel = widget.viewModel.getHandLevel(planet.pokerHand);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: lightGrey,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            Image.asset(planet.imageAsset, width: 40),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(text: planet.name),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: blue100,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: CustomText(
+                      text: "${planet.pokerHand.name} (Niv.$currentLevel)",
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        content: CustomText(text: planet.description),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: CustomText(text: "Fermer"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildShopSlider() {
+    return Container(
+      width: 104,
+      height: 32,
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: darkGrey,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Stack(
+        children: [
+          AnimatedAlign(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeInOut,
+            alignment: showPlanets
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            child: Container(
+              width: 49,
+              decoration: BoxDecoration(
+                color: showPlanets ? blue100 : green,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Tooltip(
+                  message: "Jokers",
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => setState(() {
+                      showPlanets = false;
+                      selectedPlanetId = null;
+                    }),
+                    child: Center(
+                      child: Image.asset(
+                        "${jokerImagePathPrefix}joker_icon.png",
+                        height: 22,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Tooltip(
+                  message: "Planètes",
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => setState(() {
+                      showPlanets = true;
+                      selectedJokerId = null;
+                    }),
+                    child: Center(
+                      child: Image.asset(
+                        "${planetImagePathPrefix}planet_icon.png",
+                        height: 22,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildJokerListView() {
+    return ListView.separated(
+      key: const ValueKey("shop_jokers"),
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+      itemCount: widget.viewModel.shop.itemsInStore.length,
+      separatorBuilder: (_, _) => const SizedBox(width: 12),
+      itemBuilder: (context, index) {
+        final joker = widget.viewModel.shop.itemsInStore[index];
+        final isSelected = selectedJokerId == joker.id;
+
+        return ShopJokerCard(
+          key: ValueKey(joker.id),
+          joker: joker,
+          isSelected: isSelected,
+          canBuy: widget.viewModel.canBuyJoker(joker),
+          onTap: () => toggleSelection(joker.id),
+          onBuy: () {
+            setState(() => selectedJokerId = null);
+            widget.viewModel.buyJoker(joker);
+          },
+          onInfo: () => showJokerDescription(context, joker),
+        );
+      },
+    );
+  }
+
+  Widget buildPlanetListView() {
+    return ListView.separated(
+      key: const ValueKey("shop_planets"),
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+      itemCount: widget.viewModel.shop.planetsInStore.length,
+      separatorBuilder: (_, _) => const SizedBox(width: 12),
+      itemBuilder: (context, index) {
+        final planet = widget.viewModel.shop.planetsInStore[index];
+        final isSelected = selectedPlanetId == planet.id;
+
+        return ShopPlanetCard(
+          key: ValueKey(planet.id),
+          planet: planet,
+          handLevel: widget.viewModel.getHandLevel(planet.pokerHand),
+          isSelected: isSelected,
+          canBuy: widget.viewModel.canBuyPlanet(planet),
+          onTap: () => togglePlanetSelection(planet.id),
+          onBuy: () {
+            setState(() => selectedPlanetId = null);
+            widget.viewModel.buyPlanet(planet);
+          },
+          onInfo: () => showPlanetDescription(context, planet),
+        );
+      },
     );
   }
 
@@ -138,7 +321,10 @@ class ShopJokerListState extends State<ShopJokerList> {
                     ),
                   ),
                   onPressed: () {
-                    setState(() => selectedJokerId = null);
+                    setState(() {
+                      selectedJokerId = null;
+                      selectedPlanetId = null;
+                    });
                     widget.viewModel.rerollShop();
                   },
                   child: FittedBox(
@@ -154,28 +340,19 @@ class ShopJokerListState extends State<ShopJokerList> {
           const SizedBox(width: 10),
           Expanded(
             flex: 3,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
-              itemCount: widget.viewModel.shop.itemsInStore.length,
-              separatorBuilder: (_, _) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                final joker = widget.viewModel.shop.itemsInStore[index];
-                final isSelected = selectedJokerId == joker.id;
-
-                return ShopJokerCard(
-                  key: ValueKey(joker.id),
-                  joker: joker,
-                  isSelected: isSelected,
-                  canBuy: widget.viewModel.canBuyJoker(joker),
-                  onTap: () => toggleSelection(joker.id),
-                  onBuy: () {
-                    setState(() => selectedJokerId = null);
-                    widget.viewModel.buyJoker(joker);
-                  },
-                  onInfo: () => showJokerDescription(context, joker),
-                );
-              },
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: buildShopSlider(),
+                ),
+                const SizedBox(height: 4),
+                Expanded(
+                  child: showPlanets
+                      ? buildPlanetListView()
+                      : buildJokerListView(),
+                ),
+              ],
             ),
           ),
         ],
@@ -318,6 +495,136 @@ class RarityBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: CustomText(text: rarity.label, fontSize: 10),
+    );
+  }
+}
+
+class ShopPlanetCard extends StatelessWidget {
+  const ShopPlanetCard({
+    super.key,
+    required this.planet,
+    required this.handLevel,
+    required this.isSelected,
+    required this.canBuy,
+    required this.onTap,
+    required this.onBuy,
+    required this.onInfo,
+  });
+
+  final JokeroPlanet planet;
+  final int handLevel;
+  final bool isSelected;
+  final bool canBuy;
+  final VoidCallback onTap;
+  final VoidCallback onBuy;
+  final VoidCallback onInfo;
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutBack,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: value,
+          child: Opacity(opacity: value.clamp(0.0, 1.0), child: child),
+        );
+      },
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeOutBack,
+          transform: Matrix4.translationValues(0, isSelected ? -5 : 0, 0),
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? Colors.white.withValues(alpha: 0.25)
+                : Colors.white.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: blue100,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: CustomText(
+                  text: "${planet.pokerHand.name} • Niv.$handLevel",
+                  fontSize: 10,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Flexible(
+                child: AnimatedScale(
+                  scale: isSelected ? 1.08 : 1.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Image.asset(planet.imageAsset, fit: BoxFit.contain),
+                ),
+              ),
+              const SizedBox(height: 4),
+              CustomText(text: planet.name),
+              AnimatedSize(
+                duration: const Duration(milliseconds: 220),
+                curve: Curves.easeInOut,
+                child: isSelected
+                    ? Padding(
+                        padding: const EdgeInsets.only(top: 6.0),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: canBuy
+                                    ? scoreToReachColor
+                                    : Colors.grey,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              onPressed: canBuy ? onBuy : null,
+                              child: CustomText(
+                                text: "Acheter (${planet.cost}\$)",
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: green,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              onPressed: onInfo,
+                              child: const Icon(Icons.info_outline, size: 16),
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

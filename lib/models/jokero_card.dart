@@ -22,13 +22,14 @@ enum Rank {
 }
 
 enum Suit {
-  spade("spade"),
-  club("club"),
-  diamond("diamond"),
-  heart("heart");
+  spade("spade", "Pique"),
+  club("club", "Trèfle"),
+  diamond("diamond", "Carreau"),
+  heart("heart", "Coeur");
 
-  const Suit(this.rawValue);
+  const Suit(this.rawValue, this.name);
   final String rawValue;
+  final String name;
 }
 
 class JokeroCard {
