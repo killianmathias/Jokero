@@ -27,7 +27,10 @@ class JokeroStats {
     }
   }
 
-  JokeroPokerHand getMostPlayedHand() {
+  JokeroPokerHand? getMostPlayedHand() {
+    if (playedHands.values.every((count) => count == 0)) {
+      return null;
+    }
     return JokeroPokerHand.values.reduce(
       (a, b) => (playedHands[a] ?? 0) >= (playedHands[b] ?? 0) ? a : b,
     );

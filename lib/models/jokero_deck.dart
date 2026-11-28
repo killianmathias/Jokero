@@ -27,7 +27,7 @@ class JokeroDeck {
 
   void addCards(List<JokeroCard> cards) {
     for (var card in cards) {
-      this.addCard(card);
+      addCard(card);
     }
   }
 

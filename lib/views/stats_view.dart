@@ -50,12 +50,12 @@ class StatsView extends StatelessWidget {
                       Row(
                         children: [
                           CustomText(
-                            text: stats.getMostPlayedHand().name.toString(),
+                            text: stats.getMostPlayedHand()?.name ?? "Aucune",
                           ),
                           const SizedBox(width: 4),
                           CustomText(
                             text:
-                                "(${stats.playedHands[stats.getMostPlayedHand()]})",
+                                "(${stats.getMostPlayedHand() != null ? stats.playedHands[stats.getMostPlayedHand()!] ?? 0 : 0})",
                           ),
                         ],
                       ),

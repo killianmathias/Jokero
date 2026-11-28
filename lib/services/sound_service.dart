@@ -4,20 +4,31 @@ import "dart:math";
 
 class SoundService {
   static final AudioPlayer _player = AudioPlayer();
+  static bool enableAudio = true;
 
   static Future<void> pressButton() async {
-    await _player.play(AssetSource('sounds/button.wav'));
+    if (!enableAudio) return;
+    try {
+      await _player.play(AssetSource('sounds/button.wav'));
+    } catch (_) {}
   }
 
   static Future<void> pressCancel() async {
-    await _player.play(AssetSource('sounds/cancel.wav'));
+    if (!enableAudio) return;
+    try {
+      await _player.play(AssetSource('sounds/cancel.wav'));
+    } catch (_) {}
   }
 
   static Future<void> win() async {
-    await _player.play(AssetSource('sounds/win.wav'));
+    if (!enableAudio) return;
+    try {
+      await _player.play(AssetSource('sounds/win.wav'));
+    } catch (_) {}
   }
 
   static Future<void> multiHit() async {
+    if (!enableAudio) return;
     final random = Random();
 
     int randInt = random.nextInt(5);
@@ -26,16 +37,21 @@ class SoundService {
         ? 'sounds/multihit2.wav'
         : "sounds/multihit1.wav";
 
-    await _player.play(AssetSource(soundString));
+    try {
+      await _player.play(AssetSource(soundString));
+    } catch (_) {}
   }
 
   static Future<void> earnMoney() async {
+    if (!enableAudio) return;
     final random = Random();
 
     int randInt = 1 + random.nextInt(6);
 
     String soundString = "sounds/coin$randInt.wav";
 
-    await _player.play(AssetSource(soundString));
+    try {
+      await _player.play(AssetSource(soundString));
+    } catch (_) {}
   }
 }

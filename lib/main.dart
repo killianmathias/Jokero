@@ -3,7 +3,6 @@ import 'package:jokero/models/jokero_game_state.dart';
 import 'package:jokero/viewmodels/game_view_model.dart';
 import 'package:jokero/views/blind_selection_view.dart';
 import 'package:jokero/views/defeat_view.dart';
-import 'package:jokero/views/game_information_menu_view.dart';
 import 'package:jokero/views/home_view.dart';
 import 'package:jokero/views/round_view.dart';
 import 'package:jokero/views/shop_view.dart';

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import "package:jokero/constants/jokero_constants.dart";
-import "package:jokero/models/jokero_card.dart";
 import "package:jokero/viewmodels/game_view_model.dart";
 import "package:jokero/views/custom_text.dart";
 import "package:jokero/views/game_information_menu_view.dart";

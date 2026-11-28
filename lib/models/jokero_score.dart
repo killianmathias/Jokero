@@ -1,7 +1,3 @@
-import 'package:jokero/models/jokero_joker.dart';
-
-import "dart:math" as math;
-
 class JokeroScore {
   int chips;
   double multi;

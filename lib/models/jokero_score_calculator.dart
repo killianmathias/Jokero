@@ -1,4 +1,3 @@
-import 'package:jokero/models/jokero_hand.dart';
 import 'package:jokero/models/jokero_hand_evaluator.dart';
 import 'package:jokero/models/jokero_joker.dart';
 import 'package:jokero/models/jokero_score.dart';
@@ -17,6 +16,10 @@ class JokeroScoreCalculator {
       multi: combinaison.pokerHand.multi,
     );
 
+    for (var joker in jokers) {
+      joker.onHandPlayed(combinaison, score);
+    }
+
     for (var card in combinaison.scoringCards) {
       final isDebuffed =
           currentBlind is JokeroBossBlind && currentBlind.isCardDebuffed(card);
@@ -32,10 +35,6 @@ class JokeroScoreCalculator {
 
     if (currentBlind is JokeroBossBlind) {
       currentBlind.onEvaluateScore(score);
-    }
-
-    for (var joker in jokers) {
-      joker.onHandPlayed(combinaison, score);
     }
 
     for (int i = 0; i < jokers.length; i++) {

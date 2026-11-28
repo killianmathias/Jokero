@@ -158,7 +158,7 @@ class ShopJokerListState extends State<ShopJokerList> {
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
               itemCount: widget.viewModel.shop.itemsInStore.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              separatorBuilder: (_, _) => const SizedBox(width: 12),
               itemBuilder: (context, index) {
                 final joker = widget.viewModel.shop.itemsInStore[index];
                 final isSelected = selectedJokerId == joker.id;
@@ -242,7 +242,7 @@ class ShopJokerCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
 
-              CustomText(text: "${joker.name}"),
+              CustomText(text: joker.name),
 
               AnimatedSize(
                 duration: const Duration(milliseconds: 220),
@@ -306,7 +306,7 @@ class ShopJokerCard extends StatelessWidget {
 }
 
 class RarityBadge extends StatelessWidget {
-  const RarityBadge({required this.rarity});
+  const RarityBadge({super.key, required this.rarity});
   final JokerRarity rarity;
 
   @override

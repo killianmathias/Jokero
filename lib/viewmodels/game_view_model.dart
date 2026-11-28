@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:jokero/models/jokero_ante.dart';
 import 'package:jokero/models/jokero_card.dart';
@@ -125,6 +123,7 @@ class GameViewModel extends ChangeNotifier {
 
     if (score >= currentBlind.scoreToReach) {
       money += currentBlind.reward;
+      statsManager.stats.earnedMoney += currentBlind.reward;
       SoundService.earnMoney();
 
       shop.restock(availableJokers);
@@ -164,10 +163,11 @@ class GameViewModel extends ChangeNotifier {
   }
 
   void startNextRound() {
-    for (var joker in jokers) {
+    for (var joker in List.of(jokers)) {
       joker.onRoundEnd(this);
     }
     if (currentBlindIndex == 2) {
+      (currentBlind as JokeroBossBlind).onRoundEnd(this);
       currentAnteLevel += 1;
       if (currentAnteLevel >= 8) {
         winGame();
@@ -216,6 +216,7 @@ class GameViewModel extends ChangeNotifier {
     SoundService.pressButton();
 
     money += joker.sellPrice;
+    statsManager.stats.earnedMoney += joker.sellPrice;
     SoundService.earnMoney();
     jokers.remove(joker);
 
@@ -251,6 +252,7 @@ class GameViewModel extends ChangeNotifier {
   }
 
   void resetGame() {
+    numberOfCardsInHand = initialNumberOfCardsInHand;
     statsManager = JokeroStatsManager();
     money = startingMoney;
     jokers.clear();
