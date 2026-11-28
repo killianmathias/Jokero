@@ -3,7 +3,6 @@ import "package:jokero/constants/jokero_constants.dart";
 import "package:jokero/models/jokero_ante.dart";
 import "package:jokero/models/jokero_blind.dart";
 import "package:jokero/models/jokero_hand.dart";
-import "package:jokero/models/jokero_score.dart";
 import "package:jokero/viewmodels/game_view_model.dart";
 import "package:jokero/views/custom_text.dart";
 
@@ -83,7 +82,32 @@ class BlindInformationView extends StatelessWidget {
               children: [
                 Flexible(
                   flex: 1,
-                  child: Image.asset(blind.imageAsset, fit: BoxFit.contain),
+                  child: GestureDetector(
+                    onTap: blind is JokeroBossBlind
+                        ? () {
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: CustomText(text: blind.name),
+                                  content: CustomText(
+                                    text:
+                                        (blind as JokeroBossBlind).description,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(context).pop(),
+                                      child: const Text('Fermer'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          }
+                        : null,
+                    child: Image.asset(blind.imageAsset, fit: BoxFit.contain),
+                  ),
                 ),
                 const SizedBox(width: 6),
                 Expanded(
@@ -322,8 +346,9 @@ class OtherGameInformationView extends StatelessWidget {
                 Expanded(
                   child: _buildMiniStat(
                     "Round",
-                    (viewModel.currentAnteLevel *
-                            (viewModel.currentBlindIndex + 1))
+                    ((viewModel.currentAnteLevel - 1) * 3 +
+                            viewModel.currentBlindIndex +
+                            1)
                         .toString(),
                     white,
                   ),
