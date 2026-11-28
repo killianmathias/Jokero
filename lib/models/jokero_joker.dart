@@ -1,4 +1,5 @@
 import 'package:jokero/constants/jokero_constants.dart';
+import 'package:jokero/models/jokero_hand.dart';
 import 'package:jokero/models/jokero_hand_evaluator.dart';
 import 'package:jokero/models/jokero_score.dart';
 import 'package:jokero/viewmodels/game_view_model.dart';
@@ -175,7 +176,7 @@ class JokerAbstrait extends JokeroJoker {
     int remainingHands,
     int remainingDiscards,
   ) {
-    score.multi += (allJokers.length - 1) * 3;
+    score.multi += allJokers.length * 3;
   }
 }
 
@@ -185,7 +186,7 @@ class JokerAncient extends JokeroJoker {
   JokerAncient()
     : suit = Suit.values[Random().nextInt(Suit.values.length)],
       super(
-        id: 'joker_ancient',
+        id: 'joker_ancien',
         name: 'Joker Ancien',
         rarity: .rare,
         description: "",
@@ -204,7 +205,7 @@ class JokerAncient extends JokeroJoker {
 
   @override
   void onCardScored(JokeroCard card, JokeroScore score) {
-    if (card.suit == this.suit) {
+    if (card.suit == suit) {
       score.multi *= 1.5;
     }
   }
@@ -270,24 +271,6 @@ class Acrobat extends JokeroJoker {
   ) {
     if (remainingHands == 1) {
       score.multi *= 3;
-    }
-  }
-}
-
-class Baron extends JokeroJoker {
-  Baron()
-    : super(
-        id: "baron",
-        name: "Baron",
-        rarity: .rare,
-        description: "Chaque Roi dans la main donne x1.5 multi.",
-        cost: 8,
-      );
-
-  @override
-  void onCardScored(JokeroCard card, JokeroScore score) {
-    if (card.rank == .king) {
-      score.multi += 1.5;
     }
   }
 }
@@ -862,22 +845,6 @@ class WeeJoker extends JokeroJoker {
   }
 }
 
-class Hiker extends JokeroJoker {
-  Hiker()
-    : super(
-        id: 'hiker',
-        name: 'Randonneur',
-        rarity: .uncommon,
-        description: "Chaque carte jouée gagne de façon permanente +5 Jetons lorsqu'elle marque des points.",
-        cost: 5,
-      );
-
-  @override
-  void onCardScored(JokeroCard card, JokeroScore score) {
-    score.chips += 5;
-  }
-}
-
 class MysticSummit extends JokeroJoker {
   MysticSummit()
     : super(
@@ -938,12 +905,7 @@ class HalfJoker extends JokeroJoker {
 
   @override
   void onHandPlayed(JokeroHandCombinaison combinaison, JokeroScore score) {
-    cardsCount = 0;
-  }
-
-  @override
-  void onCardScored(JokeroCard card, JokeroScore score) {
-    cardsCount++;
+    cardsCount = combinaison.playedCardsCount;
   }
 
   @override
@@ -1014,37 +976,6 @@ class Swashbuckler extends JokeroJoker {
   }
 }
 
-class CeremonialDagger extends JokeroJoker {
-  int bonusMulti = 0;
-
-  CeremonialDagger()
-    : super(
-        id: 'ceremonial_dagger',
-        name: 'Dague cérémonielle',
-        rarity: .uncommon,
-        description: "",
-        cost: 6,
-      );
-
-  @override
-  String get description =>
-      "Ajoute le double de la valeur de vente du Joker à sa droite au Multi (Actuellement +$bonusMulti Multi).";
-
-  @override
-  void onEvaluateJoker(
-    JokeroScore score,
-    List<JokeroJoker> allJokers,
-    int index,
-    int remainingHands,
-    int remainingDiscards,
-  ) {
-    if (index + 1 < allJokers.length) {
-      score.multi += allJokers[index + 1].sellPrice * 2;
-    }
-    score.multi += bonusMulti;
-  }
-}
-
 class Blueprint extends JokeroJoker {
   Blueprint()
     : super(
@@ -1112,54 +1043,6 @@ class Brainstorm extends JokeroJoker {
   }
 }
 
-class Cavendish extends JokeroJoker {
-  Cavendish()
-    : super(
-        id: 'cavendish',
-        name: 'Cavendish',
-        rarity: .common,
-        description: "X3 Multi. 1 chance sur 1000 que cette carte soit détruite à la fin de la manche.",
-        cost: 4,
-      );
-
-  @override
-  void onEvaluateJoker(
-    JokeroScore score,
-    List<JokeroJoker> allJokers,
-    int index,
-    int remainingHands,
-    int remainingDiscards,
-  ) {
-    score.multi *= 3;
-    int randomInt = Random().nextInt(1000);
-    if (randomInt == 0) {
-      allJokers.removeAt(index);
-    }
-  }
-}
-
-class GrosMichel extends JokeroJoker {
-  GrosMichel()
-    : super(
-        id: 'gros_michel',
-        name: 'Gros Michel',
-        rarity: .common,
-        description:
-            "+15 Multi. 1 chance sur 6 d'être détruit à la fin de la manche.",
-        cost: 5,
-      );
-
-  @override
-  void onEvaluateJoker(
-    JokeroScore score,
-    List<JokeroJoker> allJokers,
-    int index,
-    int remainingHands,
-    int remainingDiscards,
-  ) {
-    score.multi += 15;
-  }
-}
 
 class Blackboard extends JokeroJoker {
   bool allBlack = true;
@@ -1278,21 +1161,22 @@ class FlowerPot extends JokeroJoker {
 }
 
 class CardSharp extends JokeroJoker {
-  final Set<JokeroHandCombinaison> playedThisRound = {};
-  JokeroHandCombinaison? currentCombinaison;
+  final Set<JokeroPokerHand> playedThisRound = {};
+  JokeroPokerHand? currentHand;
 
   CardSharp()
     : super(
         id: 'card_sharp',
         name: 'Tricheur',
         rarity: .uncommon,
-        description: "X3 Multi si la main de poker jouée a déjà été jouée durant cette manche.",
+        description:
+            "X3 Multi si la main de poker jouée a déjà été jouée durant cette manche.",
         cost: 6,
       );
 
   @override
   void onHandPlayed(JokeroHandCombinaison combinaison, JokeroScore score) {
-    currentCombinaison = combinaison;
+    currentHand = combinaison.pokerHand;
   }
 
   @override
@@ -1303,11 +1187,11 @@ class CardSharp extends JokeroJoker {
     int remainingHands,
     int remainingDiscards,
   ) {
-    if (currentCombinaison != null) {
-      if (playedThisRound.contains(currentCombinaison)) {
+    if (currentHand != null) {
+      if (playedThisRound.contains(currentHand)) {
         score.multi *= 3;
       } else {
-        playedThisRound.add(currentCombinaison!);
+        playedThisRound.add(currentHand!);
       }
     }
   }
@@ -1336,7 +1220,7 @@ class Monkey extends JokeroJoker {
 
   @override
   void onRoundEnd(GameViewModel viewModel) {
-    multi += 0.1;
+    multi = ((multi * 0.2) * 10).round() / 10;
   }
 
   @override

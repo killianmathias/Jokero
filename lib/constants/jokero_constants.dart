@@ -5,7 +5,8 @@ import "package:flutter/material.dart";
 const cardImagePathPrefix = "assets/cards/";
 const blindImagePathPrefix = "assets/blinds/";
 const jokerImagePathPrefix = "assets/jokers/";
-const numberOfCardsInHand = 7;
+const initialNumberOfCardsInHand = 7;
+var numberOfCardsInHand = initialNumberOfCardsInHand;
 const startingMoney = 4;
 const maximumCardsToPlay = 5;
 const initialRemainingDiscards = 3;
@@ -34,7 +35,6 @@ List<JokeroJoker> allJokers = [
   ArrowHead(),
   JokeroBanner(),
   Acrobat(),
-  Baron(),
   JokerJovial(),
   JokerDrole(),
   JokerLoufoque(),
@@ -63,17 +63,13 @@ List<JokeroJoker> allJokers = [
   Triboulet(),
   Photograph(),
   WeeJoker(),
-  Hiker(),
   MysticSummit(),
   Misprint(),
   HalfJoker(),
   StencilJoker(),
   Swashbuckler(),
-  CeremonialDagger(),
   Blueprint(),
   Brainstorm(),
-  Cavendish(),
-  GrosMichel(),
   Blackboard(),
   SeeingDouble(),
   FlowerPot(),
